@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css" integrity="sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ" crossorigin="anonymous">
+<script src="https://code.jquery.com/jquery-3.1.1.slim.min.js" integrity="sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n" crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb" crossorigin="anonymous"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha384-vBWWzlZJ8ea9aCX4pEW3rVHjgjt7zpkNpZk+02D9phzyeVkE+jo0ieGizqPLForn" crossorigin="anonymous"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+
+<style>
+
+@font-face {
+  font-family: 'SansationLight';
+  src: url('./FontSansationLight/SansationLight.eot');
+  src: local('SansationLight'), url('./FontSansationLight/SansationLight.woff') format('woff'), url('./FontSansationLight/SansationLight.ttf') format('truetype');
+}
+* {box-sizing: border-box}
+
+/* Set height of body and the document to 100% */
+body, html {
+    height: 100%;
+    margin: 0;
+    font-family: 'SansationLight' !important;
+    background: rgb(22,22,22);
+}
+
+/* Style tab links */
+.tablink {
+	font-weight: bold;
+	font-family: 'SansationLight' !important;
+    background-color: #557;
+    color: azure;
+    float: left;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    padding: 12px 12px;
+    font-size: 17px;
+    width: 12.5%;
+}
+
+.tablink:hover {
+    background-color: #579;
+}
+
+/* Style the tab content (and add height:100% for full page content) */
+.tabcontent {
+    color: white;
+    padding: 100px 20px;
+    height: 100%;
+}
+
+#Consilieri {background-color: rgb(22,22,22);}
+#Partide {background-color: rgb(22,22,22);}
+#Comisii {background-color: rgb(22,22,22);}
+#Pontaje {background-color: rgb(22,22,22);}
+</style>
+</head>
+<body>
+
+  <a href="employees"><button class="tablink" style="background:rgb(70,130,180); color: white">Employees</button></a>
+  <a href="departments"><button class="tablink">Departments</button></a>
+  <a href="jobs"><button class="tablink">Jobs</button></a>
+  <a href="locations"><button class="tablink">Locations</button></a>
+	  <a href="countries"><button class="tablink">Countries</button></a>
+  <a href="jobgrades"><button class="tablink">Job_Grades</button></a>
+  <a href="jobhistory"><button class="tablink">Job_History</button></a>
+  <a href="regions"><button class="tablink">Regions</button></a>
+  
+  <div id="Consilieri" class="tabcontent">
+  <center>
+      <br>
+      <h1 id="h3">Editeaza employee</h1>
+      <br><br><br>
+      <form class="was-validated" method="POST" action="/editEmployee">
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="validationServer01">First name</label>
+            <input name="first_name" type="text" class="form-control is-valid" id="validationServer01" value="{{first_name}}" required>
+          </div>
+		  <div class="col-md-6 mb-3">
+            <label for="validationServer01">Last name</label>
+            <input name="last_name" type="text" class="form-control is-valid" id="validationServer01" value="{{last_name}}" required>
+          </div>
+		  <div class="col-md-6 mb-3">
+            <label for="validationServer01">Email</label>
+            <input name="email" type="email" class="form-control is-valid" id="validationServer01" value="{{email}}" required>
+          </div>
+		  <div class="col-md-6 mb-3">
+            <label for="validationServer01">Phone number</label>
+            <input name="phone_number" type="number" class="form-control is-valid" id="validationServer01" value="{{phone_number}}" required>
+          </div>
+		  <div class="col-md-6 mb-3">
+            <label for="validationServer01">Hire date</label>
+            <input name="hire_date" type="text" class="form-control is-valid" id="validationServer01" value="{{hire_date}}" required>
+          </div>
+		  <div class="col-md-6 mb-3">
+            <label for="validationServer01">Salary</label>
+            <input name="salary" type="number" class="form-control is-valid" id="validationServer01" value="{{salary}}" required>
+          </div>
+		  
+          <div class="col-md-6 mb-3">
+            <label for="validationServer01">Commission pct</label>
+            <input name="commission_pct" type="text" class="form-control is-valid" id="validationServer02" value="{{commission_pct}}" required>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-6 mb-3">
+            <label for="validationServer01">Job id</label>
+            <select name="job_id" class="custom-select d-block my-3">
+              <option value="{{job_id}}" required>{{job_id}}</option>
+              {% for com in jobs %}
+                <option value={{com}}>{{com}}</option>
+              {% endfor %}
+            </select>
+          </div>
+          
+          <div class="col-md-6 mb-3">
+            <label for="validationServer01">Nume Departament</label>
+            <select name="department_name" class="custom-select d-block my-3">
+              <option value="{{department_name}}" required>{{department_name}}</option>
+              {% for com in department %}
+                <option value={{com}}>{{com}}</option>
+              {% endfor %}
+            </select>
+          </div>
+         <!-- <div class="col-md-3 mb-3">
+            <label for="validationServer01">Departament</label>
+            <select name="department_id" class="custom-select d-block my-3" >
+              <option value="{{department_id}}" required>{{department_id}}</option>
+              {% for par in department %}
+                <option value={{par}}>{{par}}</option>
+              {% endfor %}
+            </select>
+          </div>-->
+        </div>
+        <button class="btn btn-primary" type="submit">Editeaza Angajat</button>
+      </form>
+
+  </center>
+
+  <script type="text/javascript">
+  function checkDuplicates() {
+        var selects = document.getElementsByTagName('select');
+        var values = [];
+        for(i=0;i<selects.length;i++) {
+            var select = selects[i];
+            if(values.indexOf(select.value)>-1) {
+                alert('Comisia ' + i + ' a fost aleasa de mai multe ori!'); //if duplicates found we are returning. without save and no need to continue.
+                return false;
+            }
+            values.push(select.value)
+        }
+        return true;
+    //saveform here
+    }
+  /*
+  $dropdown1.change(function() {
+    $dropdown2.children().show();
+    var selectedItem = $($dropdown1).val();
+    if (selectedItem != "")
+      $('select[name="dropdown2"] option[value="' + selectedItem + '"]').hide();
+  });
+  
+  $dropdown2.change(function() {
+    $dropdown1.children().show();
+    var selectedItem = $($dropdown2).val();
+    if (selectedItem != "")
+      $('select[name="dropdown1"] option[value="' + selectedItem + '"]').hide();
+  });
+
+  $dropdown3.change(function() {
+    $dropdown1.children().show();
+    $dropdown2.children().show();
+    var selectedItem1 = $($dropdown1).val();
+    var selectedItem2 = $($dropdown2).val();
+    if (selectedItem1 != "" || selectedItem2 != ""){
+      $('select[name="dropdown3"] option[value="' + selectedItem1 + '"]').hide();
+      $('select[name="dropdown3"] option[value="' + selectedItem2 + '"]').hide();
+    }
+  });
+  */
+</script>
+
+</body>
+</html> 
