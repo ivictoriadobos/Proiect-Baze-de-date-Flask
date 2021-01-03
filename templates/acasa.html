@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    {% block title %}
+    <title>Acasa</title>
+    {% endblock title %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <style>
+        body {
+                background-color: gray }
+    </style>
+</head>
+<body>
+
+
+<nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
+    <!-- Brand -->
+    <a class="navbar-brand" href="acasa">Acasa</a>
+
+    <!-- Links -->
+    <ul class="navbar-nav">
+        <li class="nav-item">
+            <a class="nav-link" href="#">Animale</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="clienti">Clienti</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" href="#">Medici</a>
+        </li>
+
+        <!-- Dropdown -->
+        <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" id="navbardrop" data-toggle="dropdown">
+                Programari
+            </a>
+            <div class="dropdown-menu">
+                <a class="dropdown-item" href="vezi_programari">Vezi programari</a>
+                <a class="dropdown-item" href="#">Fa o programare</a>
+            </div>
+        </li>
+    </ul>
+</nav>
+<br>
+
+
+
+{%  block content %}
+
+    <div class="container">
+    <div class= mt-5 >
+        <div class="jumbotron ">
+            <h1>MedVet - cabinetul veterinar preferat al animalutului tau!</h1>
+            <p>MedVet este un cabinet veterinar cu experienta de peste 10 ani in care activeaza doar medici pasionati si profesionisti, astfel incat atat tu cat si animalul tau de companie va puteti simti tratat corespunzator.</p>
+        </div>
+    </div>
+        <button type="button" class="btn btn-dark">Fa o programare De adaugat si programul</button>
+    </div>
+
+
+
+{%  endblock content %}
+</body>
+</html>

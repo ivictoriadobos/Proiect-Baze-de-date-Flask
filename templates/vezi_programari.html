@@ -1,0 +1,48 @@
+{% extends "acasa.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+    <title>Vezi programari</title>
+    {%  endblock title %}
+</head>
+<body>
+
+{% block content %}
+
+    <div class="container mt-5">
+            <div class="jumbotron ">
+                <h2>Alege o luna</h2>
+                <p>Alege o luna pentru a putea vizualiza toate programarile, pentru fiecare medic in parte, din acea luna. </p>
+            </div>
+
+        <br>
+
+        <div class="input-group-prepend">
+            <button class="btn btn-dark" type="button">Arata</button>
+
+            <select class="custom-select" id="inputGroupSelectLuna">
+                <option selected="">Alege...</option>
+                <option value="1">Ianuarie</option>
+                <option value="2">Februarie</option>
+                <option value="3">Martie</option>
+                <option value="3">Aprilie</option>
+                <option value="3">Mai</option>
+                <option value="3">Iunie</option>
+                <option value="3">Iulie</option>
+                <option value="3">August</option>
+                <option value="3">Septembrie</option>
+                <option value="3">Octombrie</option>
+                <option value="3">Noiembrie</option>
+                <option value="3">Decembrie</option>
+            </select>
+        </div>
+    </div>
+
+{% endblock content %}
+</body>
+</html>
+
+
+
