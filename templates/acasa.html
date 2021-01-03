@@ -18,7 +18,7 @@
 <body>
 
 
-<nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top">
+<nav class="navbar navbar-expand-lg bg-dark navbar-dark fixed-top" >
     <!-- Brand -->
     <a class="navbar-brand" href="acasa">Acasa</a>
 
@@ -46,24 +46,29 @@
         </li>
     </ul>
 </nav>
-<br>
-
 
 
 {%  block content %}
 
-    <div class="container">
-    <div class= mt-5 >
+    <div class="container"  style="margin-top: 20mm">
         <div class="jumbotron ">
             <h1>MedVet - cabinetul veterinar preferat al animalutului tau!</h1>
             <p>MedVet este un cabinet veterinar cu experienta de peste 10 ani in care activeaza doar medici pasionati si profesionisti, astfel incat atat tu cat si animalul tau de companie va puteti simti tratat corespunzator.</p>
         </div>
-    </div>
-        <button type="button" class="btn btn-dark">Fa o programare De adaugat si programul</button>
+        <button type="button" class="btn btn-dark">Fa o programare </button>
+        <br>
+        <div style="background-color:#e9ecef;color:#222222;padding: 2rem 2rem; border-radius: .3rem; margin-top: 2rem; " >
+            <h2>Program : </h2>
+            <p>{{ program }}</p>
+        </div>
+
     </div>
 
 
 
 {%  endblock content %}
+<br>
+
+
 </body>
 </html>

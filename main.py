@@ -1,5 +1,6 @@
 from flask import Flask, render_template, jsonify, request, redirect, url_for
 import cx_Oracle
+import re
 from datetime import datetime
 
 cx_Oracle.init_oracle_client(
@@ -17,13 +18,42 @@ def redirect_acasa():
     """
     return redirect(url_for('acasa'))
 
-@app.route('/vezi_programari')
+@app.route('/vezi_programari', methods=["POST", "GET"])
 def vezi_programari():
-    return render_template('vezi_programari.html')
+    afiseaza = False
+    medici = dict()
+    if request.method == "POST":
+        show = request.form["vezi_programari_luna"]
+        if show != "Alege..." :
+            afiseaza = True
+
+            cur = con.cursor()
+            query = '''select m.nume "Nume medic", TO_CHAR(data, 'fmDD Day "of" Month HH24:MI:SS AM') "Data programarii" from medic m
+                    left outer join programare p
+                    on m.id_medic = p.id_medic
+                    WHERE TO_CHAR(p.data, 'MM') =  ''' + show + "order by m.nume, data"
+            print(query)
+            cur.execute(query)
+            for medic in cur:
+                if medic[0] in medici:
+                    # append the new number to the existing array at this slot
+                    medici[medic[0]].append(medic[1])
+                else:
+                    # create a new array in this slot
+                    medici[medic[0]] = [medic[1]]
+
+            cur.close()
+            print(medici)
+
+    return render_template('vezi_programari.html', afiseaza = afiseaza, medici = medici)
 
 @app.route('/acasa')
 def acasa():
-    return render_template('acasa.html')
+    cur = con.cursor()
+    cur.execute('select program from cabinet')
+    program = cur.fetchone()[0]
+    cur.close()
+    return render_template('acasa.html', program = program)
 
 # employees begin code
 @app.route('/clienti')
