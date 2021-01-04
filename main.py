@@ -10,6 +10,14 @@ app = Flask(__name__)
 
 dsn = cx_Oracle.makedsn("bd-dc.cs.tuiasi.ro", 1539, service_name="orcl")
 con = cx_Oracle.connect("bd119", "bd119", dsn, encoding="UTF-8")
+#
+# din clienti.html se apasa pe editeaza ---> se trimite pe ramura /editeazaClient unde se apeleaza functia editClient. Aici se requesteaza numele clientului respectiv
+# etc pentru autofill si se returneaza editeazaClient.html. Cand se da submit la modificari se trimite pe ramura /validateChanges ce va apela automat o functie
+# cu nume asemanator, va valida sa invalida modificarile si in caz de reusita se redirectioneaza spre clienti(clienti.html) sau inapoi la editeaza client
+# Nota : la requestarea detaliilor clientului s-ar putea sa fie nevoie de crearea unui dictionar cu ele pentru a putea fi pasat inainte si inapoi intre stari
+
+success = False
+redrct = False
 
 @app.route('/')
 def redirect_acasa():
@@ -31,7 +39,7 @@ def vezi_programari():
             query = '''select m.nume "Nume medic", TO_CHAR(data, 'fmDD Day "of" Month HH24:MI:SS AM') "Data programarii" from medic m
                     left outer join programare p
                     on m.id_medic = p.id_medic
-                    WHERE TO_CHAR(p.data, 'MM') =  ''' + show + "order by m.nume, data"
+                    WHERE TO_CHAR(p.data, 'MM') =  ''' + show + " order by m.nume, data"
             print(query)
             cur.execute(query)
             for medic in cur:
@@ -55,22 +63,143 @@ def acasa():
     cur.close()
     return render_template('acasa.html', program = program)
 
-# employees begin code
-@app.route('/clienti')
+@app.route("/clienti", methods = ["POST", "GET"])
 def clienti():
-    clienti = []
+    global redrct
+    global success
+    redirect = redrct
+    redrct = False
 
+    clienti = []
     cur = con.cursor()
     cur.execute('select * from client')
     for result in cur:
-        client = {}
-        client['nume'] = result[1] # result[0]e id-ul
-        client['nr_telefon'] = result[2]
-        client['adresa'] = result[3]
-
+        client = {'id_client': result[0], 'nume': result[1], 'nr_telefon': result[2], 'adresa': result[3]}
         clienti.append(client)
     cur.close()
-    return render_template('clienti.html', clienti=clienti)
+
+    print("Redirect : " + str(redirect) + "Success : " + str(success))
+    return render_template('clienti.html', clienti=clienti, redirect = redirect, success = success) # redirect = False deoarece nu accesam pagina clienti
+                                                                                # in urma redirectarii, asa cum se intampla la valideazaEditareClient
+
+
+@app.route("/editeazaClient", methods=["POST", "GET"])
+def editClient():
+
+    # aici se vor requesta detaliitle clientului care se vrea a fi modificat si se va returna render_template(editeazaClient.html, dictionar cu detalii)
+    id_client = request.form['editeaza_buton']
+    cur = con.cursor()
+    cur.execute('select * from client where id_client= ' + id_client)
+
+    client = cur.fetchone()
+    nume_client = client[1]
+    nr_telefon_client = client[2]
+    adresa_client = client[3]
+    client_detalii = [id_client, nume_client, nr_telefon_client, adresa_client]
+
+    cur.close()
+    return render_template("editeazaClient.html", client_detalii = client_detalii)
+
+
+@app.route("/stergeClient", methods=["POST"])
+def stergeClient():
+    global con
+    global success
+    global redrct
+    redrct = True
+    id_client = request.form['sterge_buton']
+    cur = con.cursor()
+    try:
+        cur.execute('delete from client where id_client = ' + id_client)
+        con.commit()
+        success = True
+    except cx_Oracle.Error as error:
+        print(error)
+        success = False
+    cur.close()
+    return redirect('/clienti')
+
+@app.route("/adaugaClient", methods=["GET", "POST"])
+def adauga_Client():
+    if request.method == "POST":
+        nume_client = "'" + request.form["nume"] + "'"
+        nr_telefon = "'" + request.form["nr_telefon"] + "'"
+        adresa = request.form["adresa"]
+        if adresa != None:
+            adresa = "'" + adresa + "'"
+        else:
+            adresa = "null"
+
+        #insert into client (nume, nr_telefon, adresa) values ('Popescu Mioara', '0711223344', null);
+        global redrct
+        global success
+        redrct = True
+        cur = con.cursor()
+        query = "insert into client (nume, nr_telefon, adresa) values (" + nume_client + ", " + nr_telefon + "," + adresa + ")"
+        print(query)
+        try:
+            cur.execute(query)
+            con.commit()
+            success = True
+        except cx_Oracle.Error as e:
+            print(e)
+            success = False
+        cur.close()
+        return redirect("/clienti")
+
+    return render_template("adaugaClient.html")
+
+
+@app.route("/valideazaEditareClient", methods=["POST", "GET"])
+def valideazaEditareClient():
+
+    global con
+    global success
+    global redrct
+    redrct = True
+    success = False
+    id_client = request.form["id_client"]
+    nume_client ="'" +  request.form["nume"] + "'"
+    nr_telefon_client = "'" + request.form["nr_telefon"]+ "'"
+    adresa_client = request.form["adresa"]
+    if adresa_client is None:
+        adresa_client = "null"
+    else:
+        adresa_client = "'" + adresa_client + "'"
+
+
+    cur = con.cursor()
+    try:
+
+        # Execute the SQL command
+        # print("TRY Query: " + "update client set nume = " + nume_client + " nr_telefon = " + nr_telefon_client + " adresa = " + adresa_client + " where id_client = " + id_client)
+
+        cur.execute("update client set nume = " + nume_client + ", nr_telefon = " + nr_telefon_client + ", adresa = " + adresa_client + " where id_client = " + id_client)
+        cur = con.cursor()
+
+        # cur.execute("Select * from client")
+        # for x in cur:
+        #     try:
+        #         print("\nTRY - TRY" + x[2] + x[3])
+        #     except:
+        #         print("\nTRY - EXCEPT" + x[2] + "-")
+        # # Commit your changes in the database
+        # print("\nTRY query executat")
+
+        con.commit()
+        success = True
+    except cx_Oracle.Error as error :
+
+        # Rollback in case there is any error
+        success = False
+        cur.execute("rollback")
+
+    #     print("\nEXCEPT" + error)
+    # print("\nDupa try/except")
+
+    cur.close()
+    return redirect('/clienti')
+
 
 
 # ------------------

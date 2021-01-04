@@ -1,0 +1,41 @@
+{% extends "acasa.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+    <title>Adauga client</title>
+    {% endblock %}
+</head>
+<body>
+    {% block content  %}
+        <div style="margin: 10%">
+        <form class="was-validated" action="#" method="post" >
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label for="nume">Nume</label>
+                    <input name="nume" type="text" class="form-control is-valid" id="nume" value="ex: Popescu Marinica" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="nr_telefon">Numar telefon</label>
+                    <input name="nr_telefon" type="number" class="form-control is-valid" id="nr_telefon" value="0711111111" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="adresa">Adresa</label>
+                    <input name="adresa" type="text" class="form-control is-valid" id="adresa" value="ex: Str. Luminii 23 (optional)" >
+                </div>
+
+
+            </div>
+
+            <br>
+            <button class="btn btn-dark" type="submit">Inregistreaza</button>
+
+        </form>
+        </div>
+    {% endblock %}
+</body>
+</html>

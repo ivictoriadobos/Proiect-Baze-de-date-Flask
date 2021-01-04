@@ -1,0 +1,53 @@
+{% extends "acasa.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+        <title>Editeaza client</title>
+    {%  endblock title %}
+</head>
+<body>
+{% block content %}
+
+
+        <h1 id="h3" style="position: center">Editeaza angajat</h1>
+        <br><br><br>
+
+
+        <form class="was-validated" method="POST" action="/valideazaEditareClient" style="margin: 20px">
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label for="nume">First name</label>
+                    <input name="nume" type="text" class="form-control is-valid" id="nume" value="{{client_detalii[1]}}" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="nr_telefon">Numar telefon</label>
+                    <input name="nr_telefon" type="number" class="form-control is-valid" id="nr_telefon" value="{{client_detalii[2]}}" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for="adresa">Adresa</label>
+                    <input name="adresa" type="text" class="form-control is-valid" id="adresa" value="{{client_detalii[3]}}" >
+                </div>
+
+
+            </div>
+
+            <div>
+                <label for="id_client">ID Client:</label>
+                <input type="text" id="id_client" name="id_client" value="{{ client_detalii[0] }}" readonly hidden >
+            </div>
+            <br>
+            <button class="btn btn-dark" type="submit">Editeaza Client</button>
+
+        </form>
+
+
+
+{% endblock content %}
+
+</body>
+</html>
