@@ -1,0 +1,58 @@
+{% extends "acasa.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+    <title>Editeaza programare</title>
+    {% endblock title%}
+</head>
+<body>
+    {% block content %}
+        <br><br><br>
+
+
+        <form class="was-validated" method="POST" action="/valideazaEditareProgramare" style="margin: 8%">
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label for="data">Data:</label>
+                    <input name="data" type="text" class="form-control is-valid" id="data" value="{{data_curenta}}" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                <label for = "alege_medic">Medic:</label>
+                    <select class="custom-select" id="alege_medic" name="alege_medic" required>
+                        <option selected="">{{nume_nr_telefon_medic}}</option>
+                        {% for medic in lista_medici %}
+                        <option value="{{ medic[0] }}">{{ medic[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+                    <label for = "alege_animal_client">Animal:</label>
+                    <select class="custom-select" id="alege_animal_client" name="alege_animal_client" required>
+                        <option selected="">{{animal_client}}</option>
+                        {% for animal_client in lista_animal_client %}
+                        <option value="{{ animal_client[0] }}">{{ animal_client[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+            </div>
+            <div>
+                <label for="id_programare">ID Programare:</label>
+                <input type="text" id="id_programare" name="id_programare" value="{{ id_programare }}" readonly hidden >
+            </div>
+            <br>
+            <button class="btn btn-dark" type="submit">Editeaza Programare</button>
+
+        </form>
+
+
+
+    {% endblock content %}
+</body>
+</html>
