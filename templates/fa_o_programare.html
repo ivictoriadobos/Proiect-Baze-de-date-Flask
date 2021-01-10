@@ -1,0 +1,48 @@
+{% extends "acasa.html" %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    {% block title %}
+        <title>Fa o programare</title>
+    {% endblock %}
+</head>
+<body>
+{% block content  %}
+    <div style="margin: 10%">
+        <form class="was-validated" action="/valideazaAdaugareProgramare" method="post" >
+            <div class="row">
+
+                <div class="col-md-6 mb-3">
+                    <label for="date">Data:</label>
+                    <input name="date" type="text" class="form-control is-valid" id="date" value="12-10-2021 12:45AM" required>
+                </div>
+
+                <div class="col-md-6 mb-3">
+                    <label for = "alege_medic">Medic:</label>
+                    <select class="custom-select" id="alege_medic" name="alege_medic" required>
+                        <option selected="">{{nume_nr_telefon_medic}}</option>
+                        {% for medic in lista_medici %}
+                            <option value="{{ medic[0] }}">{{ medic[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+
+                <div class="col-md-6 mb-3">
+                    <label for = "alege_animal_client">Animal:</label>
+                    <select class="custom-select" id="alege_animal_client" name="alege_animal_client" required>
+                        <option selected="">{{animal_client}}</option>
+                        {% for animal_client in lista_animal_client %}
+                            <option value="{{ animal_client[0] }}">{{ animal_client[0] }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <br>
+                <button class="btn btn-dark" type="submit">Inregistreaza</button>
+            </div>
+        </form>
+    </div>
+{% endblock %}
+</body>
+</html>

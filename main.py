@@ -3,8 +3,6 @@ import cx_Oracle
 import re
 from datetime import datetime
 
-cx_Oracle.init_oracle_client(
-    lib_dir=r"E:\installuri\instantclient-basiclite-windows.x64-18.5.0.0.0dbru\instantclient_18_5")
 
 app = Flask(__name__)
 
@@ -91,6 +89,101 @@ def clienti():
     print("Redirect : " + str(redirect) + "Success : " + str(success))
     return render_template('clienti.html', clienti=clienti, redirect = redirect, success = success)
 
+@app.route('/animale')
+def animale():
+    animale = []
+
+    cur = con.cursor()
+    cur.execute('select * from animal')
+    for result in cur:
+        animal = {}
+        animal['id_animal'] = result[0]
+        animal['nume'] = result[1] # result[0]e id-ul
+        animal['tip'] = result[2]
+        animal['sex'] = result[3]
+
+        animale.append(animal)
+    cur.close()
+    return render_template('animale.html', animale=animale)
+
+@app.route("/stergeAnimal", methods=["POST"])
+def stergeAnimal():
+    global con
+    global success
+    global redrct
+    redrct = True
+    id_animal = request.form['sterge_animal_buton']
+    cur = con.cursor()
+    try:
+        cur.execute('delete from animal where id_animal = ' + id_animal)
+        con.commit()
+        success = True
+    except cx_Oracle.Error as error:
+        print(error)
+        success = False
+    cur.close()
+    return redirect('/animale')
+
+@app.route("/adauga_animal", methods=["GET", "POST"])
+def adauga_animal():
+    clienti = []
+    cur = con.cursor()
+    cur.execute('select * from client')
+    for result in cur:
+        client = {'id_client': result[0], 'nume': result[1], 'nr_telefon': result[2], 'adresa': result[3]}
+        clienti.append(client)
+    cur.close()
+    global redrct
+    global success
+    redrct = True
+
+    if request.method == "POST":
+
+        id_client = request.form["alege_client"]
+        nume_animal = "'" + request.form["nume"] + "'"
+        tip = "'" + request.form["tip"] + "'"
+        sex = request.form["sex"]
+        if sex != None:
+            sex = "'" + sex + "'"
+        else:
+            sex = "null"
+
+        cur = con.cursor()
+        query = "insert into animal (nume, tip, sex, id_client) values (" + nume_animal + ", " + tip + "," + sex + "," + str(
+            id_client) + ")"
+        # print(query)
+        try:
+            cur.execute(query)
+            con.commit()
+            success = True
+        except cx_Oracle.Error as e:
+            print(e)
+            success = False
+        cur.close()
+        return redirect("/animale")
+    return render_template("adauga_animal.html", clienti=clienti)
+
+
+
+
+
+
+
+@app.route('/medici')
+def medici():
+    medici = []
+
+    cur = con.cursor()
+    cur.execute('select * from medic')
+    for result in cur:
+        medic = {}
+        medic['nume'] = result[2] # result[0]e id-ul
+        medic['nr_telefon'] = result[1]
+        medic['specializare'] = result[3]
+
+        medici.append(medic)
+    cur.close()
+    return render_template('medici.html', medici=medici)
 
 @app.route("/editeazaClient", methods=["POST", "GET"])
 def editClient():
@@ -287,43 +380,78 @@ def editeazaProgramare():
 
 
 
-@app.route("/faoprogramare", methods=["POST", "GET"])   #doar o incercare, not finished
-def fao_programare():
-    #daca se apeleaza cu metoda get trebuie sa trimit tuple de medici, animale + stapan
+@app.route("/fa_o_programare", methods=["GET", "POST"])
+def adauga_Programare():
+    #    if request.method == "POST":
+
+    # obtinem toate tuplele de felul numeAnimal:numeStapan pentru a putea oferi optiuni userului
     cur = con.cursor()
-    medici = []
+    cur.execute("select a.nume, c.nume from animal a join client c on c.id_client = a.id_client order by c.nume")
+    lista_animal_client = []
+    for result in cur:
+        lista_animal_client.append(
+            [result[0] + ":" + result[1]])  # toate animalele cu toti stapanii ( ":" = separator )
 
-    #cream o lista de dictionare cu fiecare medic pentru a-i da posibilitatea userului sa aleaga ce medic va efectua programarea ce se incearca a fi inregistrata
-    cur.execute('select * from medic')
-    for medic in cur:
-        medicc = {'id_medic' : medic[0] , 'nr_telefon_medic' : medic[1], 'nume_medic' : medic[2]}
+    # analog lista_animal_client    lista cu numeMedic:nr_telefonMedic pt toti medicii
     cur = con.cursor()
+    cur.execute("select nume, nr_telefon from medic")
+    lista_medici = []
+    for result in cur:
+        lista_medici.append([result[0] + ":" + result[1]])
 
-    #luam toate animalele cu stapanul sau
-    #exemplu de output:
-    # id_client nr_telefon nume                 id_animal nume_1
-    # 	  1     0711223344	Popescu Mioara	    1	        Mimi
-    #     1	    0711223344	Popescu Mioara	    2	        Tomita
-    #     2	    0789234567	Vasile Alexandru	3	        Bella
-    #     3	    0734567812	Stefanescu Gabriel	4	        Sheila
-    cur.execute(' select c.id_client , c.nr_telefon, c.nume, a.id_animal, a.nume from animal a join client c on a.id_client = c.id_client')
+    cur.close()
 
-
-    for stapan_animal in cur:
-        id_client = stapan_animal[0]
-        nr_telefon_client = stapan_animal[1]
-        nume_client = stapan_animal[2]
-        id_animal = stapan_animal[3]
-        nume_animal = stapan_animal[4]
+    return render_template("fa_o_programare.html", lista_medici=lista_medici, lista_animal_client=lista_animal_client)
 
 
-        animall = {'id_medic' : medic[0] , 'nr_telefon_medic' : medic[1], 'nume_medic' : medic[2]}
+
+@app.route("/valideazaAdaugareProgramare", methods=["POST", "GET"])
+def valideazAdaugareProgramare():
+    # insert into programare (data, id_medic, id_animal) values (data,id_medic, id_animal);
+    global success
+    global redrct
+    redrct = True
+    success = False
+    data = request.form.get("date", False)
+    # numeMedic:nr_telefonMedic
+    medic = request.form["alege_medic"]
+    nume_medic = medic.split(":")[0]
+    nr_telefon_medic = medic.split(":")[1]
+
+    # numeAnimal:numeClient
+    animal_client = request.form["alege_animal_client"]
+    animal_nume = animal_client.split(":")[0]
+    client_nume = animal_client.split(":")[1]
+
+    # selectam id-ul animalului ce se numeste animal_nume si are stapan pe clientul client_nume
+    query = "select a.id_animal from animal a join client c on a.id_client = c.id_client where a.nume = '" + animal_nume + "' and c.nume = '" + client_nume + "'"
     cur = con.cursor()
+    cur.execute(query)
+    id_animal = cur.fetchone()[0]
 
-    cur.execute('select * from medic')
-    for medic in cur:
-        medicc = {'id_medic' : medic[0] , 'nr_telefon_medic' : medic[1], 'nume_medic' : medic[2]}
+    # selectam id-ul medicului ce are numarul de telefon nr_telefon parsat mai sus
     cur = con.cursor()
+    cur.execute("select * from medic where nr_telefon = '" + nr_telefon_medic + "'")
+    # print("select * from medic where nr_telefon = '" + nr_telefon_medic + "'")
+    id_medic = cur.fetchone()[0]
+
+    try:
+        cur = con.cursor()
+        query = "insert into programare (data, id_medic, id_animal) values (to_date( '" + data + "','fmDD-MM-YYYY HH24:MI:SS')," + str(id_medic) + "," + str(id_animal) + ")"
+        cur.execute(query)
+        #    cur.execute("commit")
+        cur = con.cursor()
+        con.commit()
+        success = True
+    except cx_Oracle.Error as error:
+
+        # Rollback in case there is any error
+        success = False
+        cur.execute("rollback")
+
+    cur.close()
+    return redirect('/vezi_programari')
+
 
 @app.route("/valideazaEditareProgramare", methods=["POST", "GET"])
 def valideazaEditareProgramare():
